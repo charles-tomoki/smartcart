@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartCart - Comparador de Supermercados</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent: #10b981; /* Verde ahorro */
+            --accent-hover: #059669;
+            --coto: #ef4444;
+            --jumbo: #3b82f6;
+            --dia: #f59e0b;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar - Carrito */
+        .sidebar {
+            width: 320px;
+            background-color: var(--card-bg);
+            border-right: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+            z-index: 10;
+        }
+
+        .brand {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand span {
+            color: var(--accent);
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.03);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .cart-item-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .cart-item-qty {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            background: #334155;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .btn-remove {
+            background: transparent;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .cart-footer {
+            border-top: 1px solid #334155;
+            padding-top: 20px;
+        }
+
+        .btn-compare {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 15px;
+            width: 100%;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-compare:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .btn-compare:disabled {
+            background-color: #334155;
+            color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        /* Main Content - Productos */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 40px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 15px 20px;
+            background-color: var(--card-bg);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            margin-bottom: 30px;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        .search-bar:focus {
+            border-color: var(--accent);
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .product-card {
+            background-color: var(--card-bg);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            transition: transform 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            border-color: #475569;
+        }
+
+        .product-img {
+            width: 100px;
+            height: 100px;
+            background-color: white;
+            border-radius: 8px;
+            margin: 0 auto 15px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+        }
+
+        .product-name {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            flex: 1;
+        }
+
+        .product-price-range {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+
+        .btn-add {
+            background-color: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-add:hover {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        /* Overlay Resultados */
+        .results-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(5px);
+            z-index: 20;
+            display: none;
+            flex-direction: column;
+            padding: 40px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .results-header h2 {
+            font-size: 2rem;
+            margin: 0;
+        }
+
+        .btn-close {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+        .savings-banner {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.4));
+            border: 1px solid var(--accent);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .savings-amount {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--accent);
+            margin: 10px 0;
+        }
+
+        .splits-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .store-card {
+            background-color: var(--card-bg);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .store-header {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .store-coto { color: var(--coto); border-color: rgba(239, 68, 68, 0.3); }
+        .store-jumbo { color: var(--jumbo); border-color: rgba(59, 130, 246, 0.3); }
+        .store-dia { color: var(--dia); border-color: rgba(245, 158, 11, 0.3); }
+
+        .store-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+        
+        .store-item-price {
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        .checkout-bar {
+            margin-top: 30px;
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #334155;
+        }
+
+        .btn-checkout {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Vacio State */
+        .empty-cart {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-top: 50px;
+            font-size: 0.9rem;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Carrito -->
+    <div class="sidebar">
+        <div class="brand">🛒 Smart<span>Cart</span></div>
+        <div class="subtitle">Armá tu lista, nosotros encontramos el precio.</div>
+        
+        <div class="cart-items" id="cart-items">
+            <div class="empty-cart">Tu carrito está vacío.<br>Agregá productos para comparar.</div>
+        </div>
+
+        <div class="cart-footer">
+            <button class="btn-compare" id="btn-compare" disabled onclick="comparePrices()">
+                🔍 Comparar Precios
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <input type="text" class="search-bar" placeholder="Buscar productos (ej: leche, yerba, fideos)..." onkeyup="filterProducts(this.value)">
+        
+        <div class="products-grid" id="products-grid">
+            <!-- Productos inyectados por JS -->
+        </div>
+
+        <!-- Resultados Overlay -->
+        <div class="results-overlay" id="results-overlay">
+            <div class="results-header">
+                <h2>📊 Tu Compra Inteligente</h2>
+                <button class="btn-close" onclick="closeResults()">&times;</button>
+            </div>
+
+            <div class="savings-banner">
+                <div>Comprando todo en un solo lugar gastarías hasta <strong id="max-price">$0</strong></div>
+                <div class="savings-amount">Ahorrás <span id="saved-amount">$0</span></div>
+                <div>Precio final optimizado: <strong style="color: white; font-size: 1.2rem;" id="min-price">$0</strong></div>
+            </div>
+
+            <div class="splits-container" id="splits-container">
+                <!-- Tiendas inyectadas por JS -->
+            </div>
+
+            <div class="checkout-bar">
+                <div>
+                    <h3 style="margin:0 0 5px 0;">Logística Integrada</h3>
+                    <span style="color: var(--text-secondary); font-size: 0.9rem;">Consolidamos tus compras en distintos supermercados y te lo llevamos en 1 envío. (Costo envío: $2.500)</span>
+                </div>
+                <button class="btn-checkout" onclick="alert('Simulación: Redirigiendo a pasarela de pago y despachando cadetes a los supermercados.')">💳 Pagar y Recibir Hoy</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Base de datos simulada (Scraping en tiempo real ficticio)
+        const db = [
+            { id: 1, name: "Coca Cola Sabor Original 1.5L", emoji: "🥤", prices: { coto: 2100, jumbo: 2350, dia: 1950 } },
+            { id: 2, name: "Leche La Serenísima Clásica 1L", emoji: "🥛", prices: { coto: 1100, jumbo: 1150, dia: 1050 } },
+            { id: 3, name: "Yerba Mate Playadito 500g", emoji: "🧉", prices: { coto: 2800, jumbo: 3100, dia: 2750 } },
+            { id: 4, name: "Queso Cremoso Cremón 500g", emoji: "🧀", prices: { coto: 4500, jumbo: 4200, dia: 4800 } },
+            { id: 5, name: "Pan de Molde Bimbo Blanco", emoji: "🍞", prices: { coto: 2300, jumbo: 2450, dia: 2200 } },
+            { id: 6, name: "Galletitas Oreo Original 117g", emoji: "🍪", prices: { coto: 950, jumbo: 890, dia: 1050 } },
+            { id: 7, name: "Fideos Tirabuzón Matarazzo 500g", emoji: "🍝", prices: { coto: 1200, jumbo: 1350, dia: 1100 } },
+            { id: 8, name: "Puré de Tomate Arcor 520g", emoji: "🥫", prices: { coto: 850, jumbo: 900, dia: 780 } },
+            { id: 9, name: "Cerveza Stella Artois Lata 473ml", emoji: "🍺", prices: { coto: 1600, jumbo: 1500, dia: 1750 } },
+            { id: 10, name: "Papel Higiénico Higienol 4u", emoji: "🧻", prices: { coto: 3200, jumbo: 3500, dia: 2900 } },
+            { id: 11, name: "Detergente Magistral Limón 300ml", emoji: "🧼", prices: { coto: 1800, jumbo: 1750, dia: 1950 } },
+            { id: 12, name: "Huevos Blancos Cartón x6", emoji: "🥚", prices: { coto: 1500, jumbo: 1800, dia: 1400 } }
+        ];
+
+        const storeNames = { coto: "Coto", jumbo: "Jumbo", dia: "Supermercados Día" };
+        let cart = {};
+
+        // Renderizar Productos
+        function renderProducts(filter = "") {
+            const grid = document.getElementById('products-grid');
+            grid.innerHTML = "";
+
+            db.filter(p => p.name.toLowerCase().includes(filter.toLowerCase())).forEach(product => {
+                const prices = Object.values(product.prices);
+                const min = Math.min(...prices);
+                const max = Math.max(...prices);
+
+                grid.innerHTML += `
+                    <div class="product-card">
+                        <div class="product-img">${product.emoji}</div>
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-price-range">Rango: $${min} - $${max}</div>
+                        <button class="btn-add" onclick="addToCart(${product.id})">Agregar a la lista</button>
+                    </div>
+                `;
+            });
+        }
+
+        // Manejo del Carrito
+        function addToCart(id) {
+            if (cart[id]) cart[id]++;
+            else cart[id] = 1;
+            updateCartUI();
+        }
+
+        function removeFromCart(id) {
+            delete cart[id];
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const cartContainer = document.getElementById('cart-items');
+            const btnCompare = document.getElementById('btn-compare');
+            cartContainer.innerHTML = "";
+
+            const keys = Object.keys(cart);
+            
+            if (keys.length === 0) {
+                cartContainer.innerHTML = `<div class="empty-cart">Tu carrito está vacío.<br>Agregá productos para comparar.</div>`;
+                btnCompare.disabled = true;
+                return;
+            }
+
+            btnCompare.disabled = false;
+
+            keys.forEach(id => {
+                const product = db.find(p => p.id == id);
+                cartContainer.innerHTML += `
+                    <div class="cart-item">
+                        <div style="flex:1">
+                            <div class="cart-item-name">${product.emoji} ${product.name}</div>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <span class="cart-item-qty">x${cart[id]}</span>
+                            <button class="btn-remove" onclick="removeFromCart(${id})">X</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // Lógica Core de Comparación (El "Cerebro")
+        function comparePrices() {
+            let worstTotal = 0; // Si el usuario comprara todo en el super más caro
+            let optimalTotal = 0; // Comprando cada cosa en su lugar más barato
+            let splits = { coto: { items: [], total: 0 }, jumbo: { items: [], total: 0 }, dia: { items: [], total: 0 } };
+
+            Object.keys(cart).forEach(id => {
+                const product = db.find(p => p.id == id);
+                const qty = cart[id];
+                
+                // Encontrar el súper más barato para este producto
+                let bestStore = "";
+                let minPrice = Infinity;
+                let maxPrice = 0;
+
+                for (const [store, price] of Object.entries(product.prices)) {
+                    if (price < minPrice) {
+                        minPrice = price;
+                        bestStore = store;
+                    }
+                    if (price > maxPrice) maxPrice = price;
+                }
+
+                worstTotal += (maxPrice * qty);
+                optimalTotal += (minPrice * qty);
+
+                // Agregar a la lista de compras del súper ganador
+                splits[bestStore].items.push({
+                    name: product.name,
+                    qty: qty,
+                    price: minPrice,
+                    subtotal: minPrice * qty
+                });
+                splits[bestStore].total += (minPrice * qty);
+            });
+
+            const savings = worstTotal - optimalTotal;
+
+            // Renderizar Overlay
+            document.getElementById('max-price').innerText = `$${worstTotal.toLocaleString('es-AR')}`;
+            document.getElementById('min-price').innerText = `$${optimalTotal.toLocaleString('es-AR')}`;
+            document.getElementById('saved-amount').innerText = `$${savings.toLocaleString('es-AR')}`;
+
+            const splitsContainer = document.getElementById('splits-container');
+            splitsContainer.innerHTML = "";
+
+            Object.keys(splits).forEach(store => {
+                const data = splits[store];
+                if (data.items.length > 0) {
+                    let itemsHtml = data.items.map(i => `
+                        <div class="store-item">
+                            <span>${i.qty}x ${i.name}</span>
+                            <span class="store-item-price">$${i.subtotal.toLocaleString('es-AR')}</span>
+                        </div>
+                    `).join('');
+
+                    splitsContainer.innerHTML += `
+                        <div class="store-card">
+                            <div class="store-header store-${store}">
+                                🛒 ${storeNames[store]}
+                                <span>$${data.total.toLocaleString('es-AR')}</span>
+                            </div>
+                            ${itemsHtml}
+                        </div>
+                    `;
+                }
+            });
+
+            document.getElementById('results-overlay').style.display = 'flex';
+        }
+
+        function closeResults() {
+            document.getElementById('results-overlay').style.display = 'none';
+        }
+
+        function filterProducts(val) {
+            renderProducts(val);
+        }
+
+        // Init
+        renderProducts();
+
+    </script>
+</body>
+</html>
