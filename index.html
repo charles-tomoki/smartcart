@@ -3,18 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartCart - Comparador de Supermercados</title>
+    <title>SmartCart - V2 Profesional</title>
     <style>
         :root {
             --bg-color: #0f172a;
             --card-bg: #1e293b;
             --text-primary: #f8fafc;
             --text-secondary: #94a3b8;
-            --accent: #10b981; /* Verde ahorro */
+            --accent: #10b981; 
             --accent-hover: #059669;
             --coto: #ef4444;
             --jumbo: #3b82f6;
             --dia: #f59e0b;
+            --promo-bg: #4f46e5;
         }
 
         body {
@@ -28,14 +29,28 @@
             overflow: hidden;
         }
 
+        /* Top Banner */
+        .promo-banner {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            background-color: var(--promo-bg);
+            color: white;
+            text-align: center;
+            padding: 8px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            z-index: 50;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
         /* Sidebar - Carrito */
         .sidebar {
-            width: 320px;
+            width: 340px;
             background-color: var(--card-bg);
             border-right: 1px solid #334155;
             display: flex;
             flex-direction: column;
-            padding: 20px;
+            padding: 40px 20px 20px 20px;
             box-sizing: border-box;
             z-index: 10;
         }
@@ -58,8 +73,30 @@
             font-size: 0.85rem;
             color: var(--text-secondary);
             margin-bottom: 20px;
-            padding-bottom: 20px;
+            padding-bottom: 10px;
+        }
+
+        /* Filtros de Tiendas */
+        .store-filters {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
             border-bottom: 1px solid #334155;
+        }
+        
+        .store-filters h4 {
+            margin: 0 0 10px 0;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .filter-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+            cursor: pointer;
         }
 
         .cart-items {
@@ -136,7 +173,7 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            padding: 20px 40px;
+            padding: 50px 40px 20px 40px;
             overflow-y: auto;
             position: relative;
         }
@@ -149,13 +186,39 @@
             border-radius: 12px;
             color: white;
             font-size: 1rem;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             box-sizing: border-box;
             outline: none;
         }
 
         .search-bar:focus {
             border-color: var(--accent);
+        }
+
+        .categories {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .category-btn {
+            background-color: var(--card-bg);
+            border: 1px solid #334155;
+            color: var(--text-primary);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            white-space: nowrap;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .category-btn.active, .category-btn:hover {
+            background-color: var(--accent);
+            border-color: var(--accent);
+            color: white;
         }
 
         .products-grid {
@@ -173,11 +236,23 @@
             transition: transform 0.2s;
             display: flex;
             flex-direction: column;
+            position: relative;
         }
 
         .product-card:hover {
             transform: translateY(-5px);
             border-color: #475569;
+        }
+
+        .stock-badge {
+            position: absolute;
+            top: 10px; right: 10px;
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            font-size: 0.7rem;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-weight: bold;
         }
 
         .product-img {
@@ -193,7 +268,7 @@
         }
 
         .product-name {
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 600;
             margin-bottom: 10px;
             flex: 1;
@@ -228,9 +303,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(5px);
-            z-index: 20;
+            background: rgba(15, 23, 42, 0.98);
+            z-index: 100;
             display: none;
             flex-direction: column;
             padding: 40px;
@@ -259,7 +333,7 @@
         }
 
         .savings-banner {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.4));
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.3));
             border: 1px solid var(--accent);
             border-radius: 12px;
             padding: 20px;
@@ -271,7 +345,7 @@
             font-size: 3rem;
             font-weight: 800;
             color: var(--accent);
-            margin: 10px 0;
+            margin: 5px 0;
         }
 
         .splits-container {
@@ -324,6 +398,12 @@
             border: 1px solid #334155;
         }
 
+        .shipping-info {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        .shipping-info span { color: white; font-weight: bold; }
+
         .btn-checkout {
             background-color: var(--accent);
             color: white;
@@ -335,7 +415,6 @@
             cursor: pointer;
         }
 
-        /* Vacio State */
         .empty-cart {
             text-align: center;
             color: var(--text-secondary);
@@ -347,11 +426,22 @@
 </head>
 <body>
 
+    <div class="promo-banner">
+        🔥 PROMO BANCARIA: 30% Off en Jumbo pagando con Tarjeta Galicia (Tope $15.000)
+    </div>
+
     <!-- Sidebar Carrito -->
     <div class="sidebar">
         <div class="brand">🛒 Smart<span>Cart</span></div>
-        <div class="subtitle">Armá tu lista, nosotros encontramos el precio.</div>
+        <div class="subtitle">Armá tu lista, optimizamos el total.</div>
         
+        <div class="store-filters">
+            <h4>¿Dónde querés comprar?</h4>
+            <label class="filter-label"><input type="checkbox" id="chk-coto" checked onchange="updateCartUI()"> Coto</label>
+            <label class="filter-label"><input type="checkbox" id="chk-jumbo" checked onchange="updateCartUI()"> Jumbo</label>
+            <label class="filter-label"><input type="checkbox" id="chk-dia" checked onchange="updateCartUI()"> Día</label>
+        </div>
+
         <div class="cart-items" id="cart-items">
             <div class="empty-cart">Tu carrito está vacío.<br>Agregá productos para comparar.</div>
         </div>
@@ -365,8 +455,16 @@
 
     <!-- Main Content -->
     <div class="main-content">
-        <input type="text" class="search-bar" placeholder="Buscar productos (ej: leche, yerba, fideos)..." onkeyup="filterProducts(this.value)">
+        <input type="text" class="search-bar" placeholder="Buscar productos por EAN o nombre..." onkeyup="filterProducts(this.value)">
         
+        <div class="categories" id="categories">
+            <button class="category-btn active" onclick="setCategory('Todos', this)">Todos</button>
+            <button class="category-btn" onclick="setCategory('Bebidas', this)">Bebidas</button>
+            <button class="category-btn" onclick="setCategory('Lácteos', this)">Lácteos</button>
+            <button class="category-btn" onclick="setCategory('Almacén', this)">Almacén</button>
+            <button class="category-btn" onclick="setCategory('Limpieza', this)">Limpieza</button>
+        </div>
+
         <div class="products-grid" id="products-grid">
             <!-- Productos inyectados por JS -->
         </div>
@@ -374,14 +472,14 @@
         <!-- Resultados Overlay -->
         <div class="results-overlay" id="results-overlay">
             <div class="results-header">
-                <h2>📊 Tu Compra Inteligente</h2>
+                <h2>📊 Tu Ticket Optimizado</h2>
                 <button class="btn-close" onclick="closeResults()">&times;</button>
             </div>
 
             <div class="savings-banner">
-                <div>Comprando todo en un solo lugar gastarías hasta <strong id="max-price">$0</strong></div>
-                <div class="savings-amount">Ahorrás <span id="saved-amount">$0</span></div>
-                <div>Precio final optimizado: <strong style="color: white; font-size: 1.2rem;" id="min-price">$0</strong></div>
+                <div style="color:var(--text-secondary)">Si compraras todo en el supermercado más caro gastarías <strong id="max-price">$0</strong></div>
+                <div class="savings-amount">Ahorro Neto: <span id="saved-amount">$0</span></div>
+                <div style="font-size: 1.2rem;">Total Optimizado (Productos): <strong style="color: white;" id="min-price">$0</strong></div>
             </div>
 
             <div class="splits-container" id="splits-container">
@@ -389,57 +487,107 @@
             </div>
 
             <div class="checkout-bar">
-                <div>
-                    <h3 style="margin:0 0 5px 0;">Logística Integrada</h3>
-                    <span style="color: var(--text-secondary); font-size: 0.9rem;">Consolidamos tus compras en distintos supermercados y te lo llevamos en 1 envío. (Costo envío: $2.500)</span>
+                <div class="shipping-info">
+                    <h3 style="margin:0 0 5px 0; color:white;">Logística Dinámica (Consolidación)</h3>
+                    Supermercados visitados: <span id="store-count">0</span><br>
+                    Costo de envío ($1.500 x Parada): <span id="shipping-cost">$0</span><br>
+                    <strong style="color:var(--accent); font-size: 1.1rem;">Total a Pagar: <span id="final-total">$0</span></strong>
                 </div>
-                <button class="btn-checkout" onclick="alert('Simulación: Redirigiendo a pasarela de pago y despachando cadetes a los supermercados.')">💳 Pagar y Recibir Hoy</button>
+                <button class="btn-checkout" onclick="alert('Simulación: Iniciando checkout múltiple y despachando cadetes.')">💳 Pagar y Recibir Hoy</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Base de datos simulada (Scraping en tiempo real ficticio)
         const db = [
-            { id: 1, name: "Coca Cola Sabor Original 1.5L", emoji: "🥤", prices: { coto: 2100, jumbo: 2350, dia: 1950 } },
-            { id: 2, name: "Leche La Serenísima Clásica 1L", emoji: "🥛", prices: { coto: 1100, jumbo: 1150, dia: 1050 } },
-            { id: 3, name: "Yerba Mate Playadito 500g", emoji: "🧉", prices: { coto: 2800, jumbo: 3100, dia: 2750 } },
-            { id: 4, name: "Queso Cremoso Cremón 500g", emoji: "🧀", prices: { coto: 4500, jumbo: 4200, dia: 4800 } },
-            { id: 5, name: "Pan de Molde Bimbo Blanco", emoji: "🍞", prices: { coto: 2300, jumbo: 2450, dia: 2200 } },
-            { id: 6, name: "Galletitas Oreo Original 117g", emoji: "🍪", prices: { coto: 950, jumbo: 890, dia: 1050 } },
-            { id: 7, name: "Fideos Tirabuzón Matarazzo 500g", emoji: "🍝", prices: { coto: 1200, jumbo: 1350, dia: 1100 } },
-            { id: 8, name: "Puré de Tomate Arcor 520g", emoji: "🥫", prices: { coto: 850, jumbo: 900, dia: 780 } },
-            { id: 9, name: "Cerveza Stella Artois Lata 473ml", emoji: "🍺", prices: { coto: 1600, jumbo: 1500, dia: 1750 } },
-            { id: 10, name: "Papel Higiénico Higienol 4u", emoji: "🧻", prices: { coto: 3200, jumbo: 3500, dia: 2900 } },
-            { id: 11, name: "Detergente Magistral Limón 300ml", emoji: "🧼", prices: { coto: 1800, jumbo: 1750, dia: 1950 } },
-            { id: 12, name: "Huevos Blancos Cartón x6", emoji: "🥚", prices: { coto: 1500, jumbo: 1800, dia: 1400 } }
+            { id: 1, category: "Bebidas", name: "Coca Cola Sabor Original 1.5L", emoji: "🥤", prices: { coto: 2100, jumbo: 2350, dia: 1950 }, stock: { coto: true, jumbo: true, dia: true } },
+            { id: 2, category: "Lácteos", name: "Leche La Serenísima Clásica 1L", emoji: "🥛", prices: { coto: 1100, jumbo: 1150, dia: null }, stock: { coto: true, jumbo: true, dia: false } },
+            { id: 3, category: "Almacén", name: "Yerba Mate Playadito 500g", emoji: "🧉", prices: { coto: 2800, jumbo: 3100, dia: 2750 }, stock: { coto: true, jumbo: true, dia: true } },
+            { id: 4, category: "Lácteos", name: "Queso Cremoso Cremón 500g", emoji: "🧀", prices: { coto: 4500, jumbo: null, dia: 4800 }, stock: { coto: true, jumbo: false, dia: true } },
+            { id: 5, category: "Almacén", name: "Pan de Molde Bimbo Blanco", emoji: "🍞", prices: { coto: 2300, jumbo: 2450, dia: 2200 }, stock: { coto: true, jumbo: true, dia: true } },
+            { id: 6, category: "Almacén", name: "Galletitas Oreo Original 117g", emoji: "🍪", prices: { coto: 950, jumbo: 890, dia: 1050 }, stock: { coto: true, jumbo: true, dia: true } },
+            { id: 7, category: "Almacén", name: "Fideos Tirabuzón Matarazzo 500g", emoji: "🍝", prices: { coto: 1200, jumbo: 1350, dia: 1100 }, stock: { coto: true, jumbo: true, dia: true } },
+            { id: 8, category: "Almacén", name: "Puré de Tomate Arcor 520g", emoji: "🥫", prices: { coto: 850, jumbo: 900, dia: 780 }, stock: { coto: true, jumbo: true, dia: true } },
+            { id: 9, category: "Bebidas", name: "Cerveza Stella Artois Lata 473ml", emoji: "🍺", prices: { coto: 1600, jumbo: 1500, dia: 1750 }, stock: { coto: true, jumbo: true, dia: true } },
+            { id: 10, category: "Limpieza", name: "Papel Higiénico Higienol 4u", emoji: "🧻", prices: { coto: 3200, jumbo: 3500, dia: 2900 }, stock: { coto: true, jumbo: true, dia: true } },
+            { id: 11, category: "Limpieza", name: "Detergente Magistral Limón 300ml", emoji: "🧼", prices: { coto: null, jumbo: 1750, dia: 1950 }, stock: { coto: false, jumbo: true, dia: true } },
+            { id: 12, category: "Almacén", name: "Huevos Blancos Cartón x6", emoji: "🥚", prices: { coto: 1500, jumbo: 1800, dia: 1400 }, stock: { coto: true, jumbo: true, dia: true } }
         ];
 
         const storeNames = { coto: "Coto", jumbo: "Jumbo", dia: "Supermercados Día" };
         let cart = {};
+        let currentCategory = "Todos";
+        let currentSearch = "";
 
-        // Renderizar Productos
-        function renderProducts(filter = "") {
+        function getActiveStores() {
+            return {
+                coto: document.getElementById('chk-coto').checked,
+                jumbo: document.getElementById('chk-jumbo').checked,
+                dia: document.getElementById('chk-dia').checked
+            };
+        }
+
+        function setCategory(cat, btn) {
+            currentCategory = cat;
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderProducts();
+        }
+
+        function filterProducts(val) {
+            currentSearch = val.toLowerCase();
+            renderProducts();
+        }
+
+        function renderProducts() {
             const grid = document.getElementById('products-grid');
             grid.innerHTML = "";
+            const activeStores = getActiveStores();
 
-            db.filter(p => p.name.toLowerCase().includes(filter.toLowerCase())).forEach(product => {
-                const prices = Object.values(product.prices);
-                const min = Math.min(...prices);
-                const max = Math.max(...prices);
+            db.forEach(product => {
+                if (currentCategory !== "Todos" && product.category !== currentCategory) return;
+                if (currentSearch && !product.name.toLowerCase().includes(currentSearch)) return;
+
+                let availablePrices = [];
+                let outOfStockStr = "";
+
+                Object.keys(activeStores).forEach(store => {
+                    if (activeStores[store]) {
+                        if (product.stock[store] && product.prices[store]) {
+                            availablePrices.push(product.prices[store]);
+                        } else {
+                            outOfStockStr = `<div class="stock-badge">Sin Stock en algún súper</div>`;
+                        }
+                    }
+                });
+
+                if (availablePrices.length === 0) {
+                    grid.innerHTML += `
+                        <div class="product-card" style="opacity: 0.5;">
+                            <div class="product-img">${product.emoji}</div>
+                            <div class="product-name">${product.name}</div>
+                            <div class="product-price-range" style="color:#ef4444;">No disponible en tiendas seleccionadas</div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const min = Math.min(...availablePrices);
+                const max = Math.max(...availablePrices);
+                const priceStr = min === max ? `$${min}` : `$${min} - $${max}`;
 
                 grid.innerHTML += `
                     <div class="product-card">
+                        ${outOfStockStr}
                         <div class="product-img">${product.emoji}</div>
                         <div class="product-name">${product.name}</div>
-                        <div class="product-price-range">Rango: $${min} - $${max}</div>
+                        <div class="product-price-range">Rango Activo: ${priceStr}</div>
                         <button class="btn-add" onclick="addToCart(${product.id})">Agregar a la lista</button>
                     </div>
                 `;
             });
         }
 
-        // Manejo del Carrito
         function addToCart(id) {
             if (cart[id]) cart[id]++;
             else cart[id] = 1;
@@ -457,9 +605,11 @@
             cartContainer.innerHTML = "";
 
             const keys = Object.keys(cart);
+            const activeStores = getActiveStores();
+            const hasStores = Object.values(activeStores).some(v => v);
             
-            if (keys.length === 0) {
-                cartContainer.innerHTML = `<div class="empty-cart">Tu carrito está vacío.<br>Agregá productos para comparar.</div>`;
+            if (keys.length === 0 || !hasStores) {
+                cartContainer.innerHTML = `<div class="empty-cart">Seleccioná al menos un súper y agregá productos.</div>`;
                 btnCompare.disabled = true;
                 return;
             }
@@ -480,50 +630,73 @@
                     </div>
                 `;
             });
+            // Update grid to reflect disabled stores logic if needed
+            renderProducts();
         }
 
-        // Lógica Core de Comparación (El "Cerebro")
         function comparePrices() {
-            let worstTotal = 0; // Si el usuario comprara todo en el super más caro
-            let optimalTotal = 0; // Comprando cada cosa en su lugar más barato
+            let worstTotal = 0; 
+            let optimalTotal = 0; 
             let splits = { coto: { items: [], total: 0 }, jumbo: { items: [], total: 0 }, dia: { items: [], total: 0 } };
+            const activeStores = getActiveStores();
+            let unfillable = false;
 
             Object.keys(cart).forEach(id => {
                 const product = db.find(p => p.id == id);
                 const qty = cart[id];
                 
-                // Encontrar el súper más barato para este producto
                 let bestStore = "";
                 let minPrice = Infinity;
                 let maxPrice = 0;
 
-                for (const [store, price] of Object.entries(product.prices)) {
-                    if (price < minPrice) {
-                        minPrice = price;
-                        bestStore = store;
+                for (const [store, isActive] of Object.entries(activeStores)) {
+                    if (isActive && product.stock[store] && product.prices[store]) {
+                        let price = product.prices[store];
+                        if (price < minPrice) {
+                            minPrice = price;
+                            bestStore = store;
+                        }
+                        if (price > maxPrice) maxPrice = price;
                     }
-                    if (price > maxPrice) maxPrice = price;
                 }
 
-                worstTotal += (maxPrice * qty);
-                optimalTotal += (minPrice * qty);
+                if (minPrice === Infinity) {
+                    unfillable = true;
+                } else {
+                    worstTotal += (maxPrice * qty);
+                    optimalTotal += (minPrice * qty);
 
-                // Agregar a la lista de compras del súper ganador
-                splits[bestStore].items.push({
-                    name: product.name,
-                    qty: qty,
-                    price: minPrice,
-                    subtotal: minPrice * qty
-                });
-                splits[bestStore].total += (minPrice * qty);
+                    splits[bestStore].items.push({
+                        name: product.name,
+                        qty: qty,
+                        price: minPrice,
+                        subtotal: minPrice * qty
+                    });
+                    splits[bestStore].total += (minPrice * qty);
+                }
             });
 
+            if (unfillable) {
+                alert("Atención: Algunos productos de tu carrito no tienen stock en los supermercados seleccionados. Ajustá los filtros o quitalos del carrito.");
+                return;
+            }
+
             const savings = worstTotal - optimalTotal;
+
+            // Calcular Envío (1500 por cada súper visitado)
+            let storesVisited = 0;
+            Object.values(splits).forEach(s => { if (s.items.length > 0) storesVisited++; });
+            const shippingCost = storesVisited * 1500;
+            const finalTotal = optimalTotal + shippingCost;
 
             // Renderizar Overlay
             document.getElementById('max-price').innerText = `$${worstTotal.toLocaleString('es-AR')}`;
             document.getElementById('min-price').innerText = `$${optimalTotal.toLocaleString('es-AR')}`;
             document.getElementById('saved-amount').innerText = `$${savings.toLocaleString('es-AR')}`;
+            
+            document.getElementById('store-count').innerText = storesVisited;
+            document.getElementById('shipping-cost').innerText = `$${shippingCost.toLocaleString('es-AR')}`;
+            document.getElementById('final-total').innerText = `$${finalTotal.toLocaleString('es-AR')}`;
 
             const splitsContainer = document.getElementById('splits-container');
             splitsContainer.innerHTML = "";
@@ -555,10 +728,6 @@
 
         function closeResults() {
             document.getElementById('results-overlay').style.display = 'none';
-        }
-
-        function filterProducts(val) {
-            renderProducts(val);
         }
 
         // Init
